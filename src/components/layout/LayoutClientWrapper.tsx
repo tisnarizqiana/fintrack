@@ -13,14 +13,14 @@ export default function LayoutClientWrapper({
 
   return (
     <div className="flex min-h-screen">
-      {/* SIDEBAR: Sticky di desktop, Drawer di mobile. Tanpa Blur & Shadow. */}
+      {/* Sidebar hanya ada SATU di sini. Menempel di desktop, drawer di mobile. */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col min-w-0">
-        {/* NAVBAR: Muncul hanya di mobile untuk membuka sidebar */}
+        {/* Navbar memberikan perintah buka ke Sidebar */}
         <Navbar onOpenSidebar={() => setIsSidebarOpen(true)} />
 
-        {/* MAIN AREA: Menghapus md:ml-64 agar layout desktop tidak bergeser dua kali */}
+        {/* Konten utama: Tanpa md:ml-64 agar tidak tumpang tindih */}
         <main className="flex-1 p-4 md:p-8 overflow-y-auto bg-black">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>

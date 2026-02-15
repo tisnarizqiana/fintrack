@@ -20,7 +20,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-black text-white selection:bg-neon-blue/30`}
       >
-        {/* Wrapper ini mengatur agar Sidebar & Navbar tersinkronisasi tanpa double offset */}
+        {/* Wrapper ini yang akan mengatur Sidebar dan Navbar agar tidak double */}
         <LayoutClientWrapper>{children}</LayoutClientWrapper>
       </body>
     </html>
