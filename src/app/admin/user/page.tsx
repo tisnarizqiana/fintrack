@@ -29,9 +29,9 @@ export default async function AdminUsersPage() {
                   {user.password}
                 </td>
                 <td className="p-5 text-right flex justify-end gap-3">
+                  {/* FIX: Atribut title ganda telah dihapus agar lolos build TypeScript */}
                   <button
                     title="Reset Password"
-                    title="Reset"
                     className="p-2 text-blue-400 hover:bg-blue-400/10 rounded-lg transition-all"
                   >
                     <RotateCcw size={18} />
