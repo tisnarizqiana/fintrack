@@ -1,16 +1,17 @@
-import NextAuth from "next-auth";
+import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
-import { DefaultSession } from "next-auth";
 
 // --- ⚡ MODULE AUGMENTATION ---
-// Bagian ini sangat penting agar Vercel tidak error saat build.
-// Kita mendaftarkan properti 'role' dan 'id' ke dalam tipe data bawaan NextAuth.
+// Mengimpor subpath agar TypeScript memuat tipenya sebelum di-augment
+import "next-auth/jwt";
+
 declare module "next-auth" {
   interface User {
+    id?: string;
     role?: string;
   }
   interface Session {
@@ -34,12 +35,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        // Cari user berdasarkan email
         const user = await db.query.users.findFirst({
           where: eq(users.email, credentials.email as string),
         });
 
-        // Jika user tidak ditemukan atau password tidak cocok
         if (!user || !user.password) return null;
 
         const isPasswordValid = await bcrypt.compare(
@@ -49,27 +48,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!isPasswordValid) return null;
 
-        // Kembalikan objek user untuk disimpan di JWT/Session
         return {
           id: user.id,
           name: user.name,
           email: user.email,
-          role: user.role, // Data dari database masuk ke sini
+          role: user.role,
         };
       },
     }),
   ],
   callbacks: {
-    // Memasukkan role & id ke dalam Token (JWT)
-    async jwt({ token, user }) {
+    // Gunakan any secara lokal jika TypeScript tetap rewel di dalam callback
+    async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.role = user.role;
         token.id = user.id;
       }
       return token;
     },
-    // Memasukkan data dari Token ke dalam Session agar bisa dibaca di UI (Client/Server Component)
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       if (session.user) {
         session.user.role = token.role;
         session.user.id = token.id;
