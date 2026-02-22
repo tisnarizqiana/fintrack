@@ -29,7 +29,7 @@ export default async function AdminUsersPage() {
                   {user.password}
                 </td>
                 <td className="p-5 text-right flex justify-end gap-3">
-                  {/* FIX: Atribut title ganda telah dihapus agar lolos build TypeScript */}
+                  {/* FIX: Atribut title sudah diperbaiki (tidak boleh ganda) */}
                   <button
                     title="Reset Password"
                     className="p-2 text-blue-400 hover:bg-blue-400/10 rounded-lg transition-all"
