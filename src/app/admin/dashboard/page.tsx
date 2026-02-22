@@ -14,7 +14,8 @@ export default async function AdminDashboard() {
   const session = await auth();
 
   // Proteksi: Hanya Admin yang bisa masuk
-  if (session?.user?.role !== "admin") {
+  // Pengecekan dilakukan secara ketat agar lolos build TypeScript di Vercel
+  if (!session || session.user?.role !== "admin") {
     redirect("/dashboard");
   }
 
@@ -57,7 +58,7 @@ export default async function AdminDashboard() {
               Admin Access
             </p>
             <p className="text-xs font-black text-white">
-              {session?.user?.name}
+              {session.user?.name}
             </p>
           </div>
         </div>
@@ -112,13 +113,11 @@ export default async function AdminDashboard() {
       <AdminCharts data={chartData} />
 
       {/* --- Users Management Table --- */}
-      {/* PENTING: Kita berikan 'key' dinamis agar React memaksa re-render 
-        tabel secara bersih setiap kali data usersData berubah.
-      */}
+      {/* PENTING: Key dinamis untuk memaksa React re-render tabel saat data berubah */}
       <UserTable
         key={usersData.length + (usersData[0]?.id || "empty")}
         usersData={usersData}
-        sessionUserId={session?.user?.id || ""}
+        sessionUserId={session.user?.id || ""}
       />
     </div>
   );
