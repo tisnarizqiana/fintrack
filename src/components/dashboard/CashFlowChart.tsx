@@ -10,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils"; // formatDate dihapus karena tidak digunakan di file ini
 
 type Transaction = {
   id: string;
@@ -110,7 +110,11 @@ export function CashFlowChart({ data }: { data: Transaction[] }) {
               boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
             }}
             itemStyle={{ color: "#e4e4e7" }}
-            formatter={(value: number) => [formatCurrency(value), "Jumlah"]}
+            // FIX: Menggunakan 'any' dan Number() agar lolos build TypeScript
+            formatter={(value: any) => [
+              formatCurrency(Number(value)),
+              "Jumlah",
+            ]}
           />
 
           <Area
