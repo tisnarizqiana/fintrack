@@ -1,5 +1,5 @@
 import { db } from "./index"; // Import koneksi db kita
-import { categories } from "./schema"; // Import tabel
+import { categories, users } from "./schema"; // Import tabel
 import * as dotenv from "dotenv";
 
 // Load env agar script bisa connect ke Turso
@@ -28,12 +28,23 @@ async function main() {
   console.log("🌱 Mulai seeding kategori...");
 
   try {
-    // Hapus data lama (opsional, biar tidak duplikat saat coba ulang)
-    // await db.delete(categories);
+    // 1. Ambil user pertama dari database agar kategori memiliki pemilik (userId)
+    const firstUser = await db.query.users.findFirst();
 
+    if (!firstUser) {
+      console.log(
+        "⚠️ Tidak ada user ditemukan. Silakan daftar/buat satu akun terlebih dahulu.",
+      );
+      process.exit(1);
+    }
+
+    console.log(`📌 Menambahkan kategori untuk user: ${firstUser.email}`);
+
+    // 2. Masukkan data ke database
     await db.insert(categories).values(
       defaultCategories.map((cat) => ({
         ...cat,
+        userId: firstUser.id, // FIX: Menambahkan userId yang wajib ada di schema
         type: cat.type as "income" | "expense", // Casting tipe data
       })),
     );
